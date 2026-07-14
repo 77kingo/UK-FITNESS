@@ -16,7 +16,7 @@ interface AuthState {
 // Key for mock session storage
 const MOCK_USER_KEY = 'uk_fitness_mock_user';
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   session: null,
   loading: true,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Dumbbell, Shield, Trophy, Activity, Heart, Flame } from 'lucide-react';
+import { Check, Dumbbell, Activity, Heart, Flame } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { useAuthStore } from '../store/authStore';
 

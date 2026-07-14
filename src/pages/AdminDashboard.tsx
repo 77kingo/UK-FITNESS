@@ -8,7 +8,6 @@ export const AdminDashboard: React.FC = () => {
   const {
     classTypes,
     scheduleSlots,
-    loading,
     error,
     fetchClassTypes,
     fetchScheduleSlots,
