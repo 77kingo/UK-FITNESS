@@ -13,7 +13,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
   const packages = [
     {
       name: 'Base Performance',
-      price: '£59',
+      price: 'Rs. 2,000',
       period: 'month',
       desc: 'Access to general strength zones, state-of-the-art weights, and changing facilities.',
       features: [
@@ -27,7 +27,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
     },
     {
       name: 'Premium Athlete',
-      price: '£89',
+      price: 'Rs. 3,500',
       period: 'month',
       desc: 'Our most popular tier. Unlimited access to classes, premium coaching reviews, and recovery recovery facilities.',
       features: [
@@ -42,7 +42,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
     },
     {
       name: 'Elite Recovery',
-      price: '£139',
+      price: 'Rs. 5,000',
       period: 'month',
       desc: 'The ultimate athletic optimization. Unlimited classes, dedicated health tracking, and custom nutrition programs.',
       features: [

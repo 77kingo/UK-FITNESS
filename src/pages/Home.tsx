@@ -51,7 +51,7 @@ export const Home: React.FC<HomeProps> = ({ onOpenAuth }) => {
             className="inline-flex items-center gap-2 bg-brand-neon/10 border border-brand-neon/30 px-3.5 py-1.5 rounded-full text-brand-neon font-bold text-xs uppercase tracking-widest mb-2"
           >
             <Trophy className="h-4 w-4 shrink-0" />
-            <span>London's Elite Training Club</span>
+            <span>Bhimdatta's Premier Fitness Center</span>
           </motion.div>
 
           <motion.h1 
@@ -166,26 +166,43 @@ export const Home: React.FC<HomeProps> = ({ onOpenAuth }) => {
           <h2 className="text-3xl font-extrabold text-white uppercase mt-2">WHAT OUR ATHLETES SAY</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="glass-card p-8 rounded-xl relative">
-            <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
-            <p className="text-gray-300 text-base italic leading-relaxed mb-6">
-              "UK FITNESS isn't just a gym; it's a dedicated hub of athletic performance. The coaching standard is exceptional. In 6 months of coaching here, I've added 40kg to my deadlift and resolved my lower back soreness."
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
+            <div>
+              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
+              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
+                "Great place for full body exercises! UK FITNESS provides top-tier training space and top-class equipment. Highly recommend this fitness hub to everyone in Mahendranagar."
+              </p>
+            </div>
             <div className="border-t border-gray-900 pt-4">
-              <h4 className="font-bold text-white text-sm uppercase">David K.</h4>
-              <p className="text-gray-500 text-xs">Canary Wharf Club Member</p>
+              <h4 className="font-bold text-white text-sm uppercase">Aade Kunwar</h4>
+              <p className="text-gray-500 text-xs">Verified Local Reviewer (4.8★)</p>
             </div>
           </div>
 
-          <div className="glass-card p-8 rounded-xl relative">
-            <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
-            <p className="text-gray-300 text-base italic leading-relaxed mb-6">
-              "The Volt Conditioning HIIT sessions are brutal but incredibly rewarding. Every single instructor brings intense energy, the equipment is pristine, and the recovery sanctuary leaves me refreshed and ready to go again."
-            </p>
+          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
+            <div>
+              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
+              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
+                "Best gym and fitness center in the Bhimdatta area. Pristine machines, welcoming workout space, and highly structured coaching options."
+              </p>
+            </div>
             <div className="border-t border-gray-900 pt-4">
-              <h4 className="font-bold text-white text-sm uppercase">Sarah L.</h4>
-              <p className="text-gray-500 text-xs">Premium Tier Member</p>
+              <h4 className="font-bold text-white text-sm uppercase">Kailash Saaud</h4>
+              <p className="text-gray-500 text-xs">Fitness Athlete (5.0★)</p>
+            </div>
+          </div>
+
+          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
+            <div>
+              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
+              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
+                "Amazing atmosphere for training. High-energy coaches and clean workout facilities. Absolutely love the workout environment here!"
+              </p>
+            </div>
+            <div className="border-t border-gray-900 pt-4">
+              <h4 className="font-bold text-white text-sm uppercase">Deeps Single</h4>
+              <p className="text-gray-500 text-xs">Active Club Member (4.8★)</p>
             </div>
           </div>
         </div>
