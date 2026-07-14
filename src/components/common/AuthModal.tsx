@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, Info } from 'lucide-react';
+import { X, Mail, Lock, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from './Button';
 
@@ -58,19 +58,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleShortcutLogin = async (role: 'member' | 'admin') => {
-    setFormError(null);
-    setIsLoading(true);
-    const mockEmail = role === 'admin' ? 'admin@ukfitness.com' : 'member@ukfitness.com';
-    const success = await login(mockEmail, 'Password123!');
-    if (success) {
-      onClose();
-    } else {
-      setFormError('Failed mock shortcut login.');
-    }
-    setIsLoading(false);
-  };
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/95 backdrop-blur-sm"
@@ -100,30 +87,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <p className="text-gray-400 text-sm mt-1.5">
             {isSignUp ? 'Create your profile to book classes' : 'Sign in to access your membership'}
           </p>
-        </div>
-
-        {/* Shortcuts for evaluation */}
-        <div className="mb-6 p-4 bg-brand-accent/50 border border-gray-800 rounded-lg">
-          <div className="flex gap-2 items-start text-xs text-gray-400 mb-3">
-            <Info className="h-4 w-4 text-brand-neon shrink-0 mt-0.5" />
-            <p>
-              <strong>Demo Shortcut:</strong> Choose a role below to log in instantly using simulated local state.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleShortcutLogin('member')}
-              className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-semibold text-xs py-2 px-3 rounded transition-colors"
-            >
-              Sign In as Member
-            </button>
-            <button
-              onClick={() => handleShortcutLogin('admin')}
-              className="flex-1 bg-brand-neon/15 hover:bg-brand-neon/25 text-brand-neon font-semibold text-xs py-2 px-3 rounded border border-brand-neon/20 transition-colors"
-            >
-              Sign In as Admin
-            </button>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

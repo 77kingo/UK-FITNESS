@@ -88,9 +88,18 @@ Re-trigger the deploy:
 vercel --prod
 ```
 
----
+## 🔑 How to Log In
 
-## 🔑 Demo Shortcuts
-For easy preview, we have provided instant login bypass triggers in the Sign-In modal:
-*   **Member Shortcut**: Logs in as `member@ukfitness.co.uk` with role `member`. Allows class bookings and profile hub management.
-*   **Admin Shortcut**: Logs in as `admin@ukfitness.co.uk` with role `admin`. Opens the **Admin Dashboard** allowing class generation and slot scheduling.
+For testing the application flows:
+
+### 1. In Local Mock Mode (no Supabase connection)
+*   **Admin Access**: Type any email containing `admin` (e.g., `admin@ukfitness.com`) and any password.
+*   **Member Access**: Type any other email (e.g., `member@ukfitness.com`) and any password.
+
+### 2. In Production / Supabase Mode
+You must register users via standard sign-up or Supabase Auth. By default, new users are assigned the `member` role. To elevate a user to `admin`, execute this in your Supabase SQL editor:
+```sql
+UPDATE public.profiles 
+SET role = 'admin'::public.user_role 
+WHERE email = 'admin@yourdomain.com';
+```
