@@ -9,12 +9,71 @@ interface AuthState {
   error: string | null;
   initialize: () => Promise<void>;
   login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, fullName: string, role?: UserRole) => Promise<boolean>;
+  signup: (email: string, password: string, fullName: string, role?: UserRole) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
 // Key for mock session storage
 const MOCK_USER_KEY = 'uk_fitness_mock_user';
+
+// Helper function to get or create profile on session load (fallback self-healing)
+const getOrCreateProfile = async (session: any): Promise<UserProfile> => {
+  const fallbackName = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Gym Member';
+  const fallbackRole = session.user.user_metadata?.role || 'member';
+
+  try {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (!error && profile) {
+      return {
+        id: profile.id,
+        email: profile.email,
+        fullName: profile.full_name,
+        avatarUrl: profile.avatar_url,
+        role: profile.role,
+        createdAt: profile.created_at,
+      };
+    }
+
+    // Try to auto-create the row if missing
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: session.user.id,
+        email: session.user.email,
+        full_name: fallbackName,
+        role: fallbackRole,
+      })
+      .select('*')
+      .maybeSingle();
+
+    if (!insertError && newProfile) {
+      return {
+        id: newProfile.id,
+        email: newProfile.email,
+        fullName: newProfile.full_name,
+        avatarUrl: newProfile.avatar_url,
+        role: newProfile.role,
+        createdAt: newProfile.created_at,
+      };
+    }
+  } catch (e) {
+    console.error('Failed to get/create profile:', e);
+  }
+
+  // Graceful fallback to avoid locking the UI if database triggers lag
+  return {
+    id: session.user.id,
+    email: session.user.email || '',
+    fullName: fallbackName,
+    role: fallbackRole,
+    createdAt: new Date().toISOString(),
+  };
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
@@ -26,7 +85,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
 
     if (isMockMode) {
-      // Load mock user from localStorage
       const stored = localStorage.getItem(MOCK_USER_KEY);
       if (stored) {
         try {
@@ -45,24 +103,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) throw error;
-
+        const userProfile = await getOrCreateProfile(session);
         set({
           session,
-          user: {
-            id: profile.id,
-            email: profile.email,
-            fullName: profile.full_name,
-            avatarUrl: profile.avatar_url,
-            role: profile.role,
-            createdAt: profile.created_at,
-          },
+          user: userProfile,
           loading: false,
         });
       } else {
@@ -76,25 +120,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (!isMockMode) {
       supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) {
-            set({
-              session,
-              user: {
-                id: profile.id,
-                email: profile.email,
-                fullName: profile.full_name,
-                avatarUrl: profile.avatar_url,
-                role: profile.role,
-                createdAt: profile.created_at,
-              },
-            });
-          }
+          const userProfile = await getOrCreateProfile(session);
+          set({
+            session,
+            user: userProfile,
+          });
         } else {
           set({ user: null, session: null });
         }
@@ -106,8 +136,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
 
     if (isMockMode) {
-      // Mock login implementation
-      // Admin bypass: if email contains admin, login as admin, else regular member
       const role: UserRole = email.toLowerCase().includes('admin') ? 'admin' : 'member';
       const fullName = email.split('@')[0].toUpperCase();
       const mockUser: UserProfile = {
@@ -131,27 +159,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (error) throw error;
 
       if (data.session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.session.user.id)
-          .single();
-
-        if (profile) {
-          set({
-            session: data.session,
-            user: {
-              id: profile.id,
-              email: profile.email,
-              fullName: profile.full_name,
-              avatarUrl: profile.avatar_url,
-              role: profile.role,
-              createdAt: profile.created_at,
-            },
-            loading: false,
-          });
-          return true;
-        }
+        const userProfile = await getOrCreateProfile(data.session);
+        set({
+          session: data.session,
+          user: userProfile,
+          loading: false,
+        });
+        return true;
       }
       set({ loading: false });
       return false;
@@ -161,11 +175,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  signup: async (email, fullName, role = 'member') => {
+  signup: async (email, password, fullName, role = 'member') => {
     set({ loading: true, error: null });
 
     if (isMockMode) {
-      // Mock signup implementation
       const mockUser: UserProfile = {
         id: role === 'admin' ? 'mock-admin-id' : 'mock-member-id',
         email,
@@ -181,7 +194,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
-        password: 'Password123!', // Simple standard password for signup demo purposes
+        password,
         options: {
           data: {
             full_name: fullName,

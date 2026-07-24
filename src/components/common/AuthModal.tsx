@@ -36,7 +36,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         // Sign up logic.
         // Quick check: if the name or email contains 'admin', sign up as an admin role
         const role = email.toLowerCase().includes('admin') ? 'admin' : 'member';
-        const success = await signup(email, fullName, role);
+        const success = await signup(email, password, fullName, role);
         if (success) {
           onClose();
         } else {
