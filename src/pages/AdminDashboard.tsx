@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useBookingStore } from '../store/bookingStore';
 import {
-  Plus, Users, Calendar, PlusCircle, Check, AlertCircle,
-  BarChart2, Star, Trash2, CheckCircle2, Clock, MessageSquare,
-  TrendingUp, Activity, Shield, Zap, UserCheck, ChevronDown,
-  Bell, RefreshCw, UserX, Eye
+  Plus, Users, Calendar, Check, AlertCircle,
+  BarChart2, Star, Trash2, CheckCircle2, Clock,
+  Activity, Shield, UserCheck, ChevronDown,
+  Bell, Eye
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
-import { ClassType } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ── Types ────────────────────────────────────────────────────────────────────

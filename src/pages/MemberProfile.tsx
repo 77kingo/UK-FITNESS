@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
 import {
-  Calendar, Clock, MapPin, Trash2, Award, UserCheck, Shield,
+  Calendar, Clock, MapPin, Trash2, Award,
   Droplets, Flame, TrendingUp, QrCode, Bell, Dumbbell,
-  CheckCircle2, ChevronRight, Plus, Minus, BarChart2,
-  Target, Zap, Star, Trophy, Activity, Heart
+  CheckCircle2, Plus, BarChart2,
+  Zap, Star, Trophy, Activity, Heart
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { HydrationLog, BodyMetricEntry } from '../types';
@@ -38,7 +38,7 @@ function getWeekDates() {
 // ── Notification seed ─────────────────────────────────────────────────────
 const SEED_NOTIFS = [
   { id: 'n1', title: 'Booking Confirmed', message: 'Your VOLT CONDITIONING class tomorrow at 07:00 is locked in.', type: 'success' as const, read: false, createdAt: new Date(Date.now() - 1*60*60*1000).toISOString() },
-  { id: 'n2', title: 'New Class Added', message: 'POWER SCULPT has been added to Saturday's schedule.', type: 'info' as const, read: false, createdAt: new Date(Date.now() - 3*60*60*1000).toISOString() },
+  { id: 'n2', title: 'New Class Added', message: "POWER SCULPT has been added to Saturday's schedule.", type: 'info' as const, read: false, createdAt: new Date(Date.now() - 3*60*60*1000).toISOString() },
   { id: 'n3', title: 'Membership Renewal', message: 'Your Premium Athlete plan renews in 25 days.', type: 'warning' as const, read: true, createdAt: new Date(Date.now() - 24*60*60*1000).toISOString() },
 ];
 
