@@ -5,7 +5,7 @@ import {
   Calendar, Clock, MapPin, Trash2, Award,
   Droplets, Flame, TrendingUp, QrCode, Bell, Dumbbell,
   CheckCircle2, Plus, BarChart2,
-  Zap, Star, Trophy, Activity, Heart
+  Zap, Star, Trophy, Activity, Heart, Coffee, Target
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { HydrationLog, BodyMetricEntry } from '../types';
@@ -494,6 +494,38 @@ export const MemberProfile: React.FC = () => {
                       </button>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Trophy Case (Gamification Badges) */}
+              <div className="glass-card p-6 rounded-2xl border border-gray-800 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Award className="h-5 w-5 text-yellow-400" />
+                  <h3 className="text-white font-bold text-sm uppercase">Trophy Case</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { id: 'first_class', title: 'First Blood', desc: 'Attended your first class', icon: <Flame className="h-6 w-6" />, active: attendedDays.length > 0 },
+                    { id: 'streak_3', title: 'Momentum', desc: 'Achieved a 3-day streak', icon: <Zap className="h-6 w-6" />, active: currentStreak >= 3 },
+                    { id: 'early_bird', title: 'Early Bird', desc: 'Attended a 6:00 AM class', icon: <Coffee className="h-6 w-6" />, active: false }, // Mock inactive badge
+                    { id: 'weekend', title: 'Weekend Warrior', desc: 'Attended a class on Saturday', icon: <Target className="h-6 w-6" />, active: false }, // Mock inactive badge
+                  ].map(badge => (
+                    <motion.div 
+                      key={badge.id}
+                      whileHover={{ scale: 1.05 }}
+                      className={`relative flex flex-col items-center text-center p-4 rounded-xl border transition-all ${
+                        badge.active 
+                          ? 'bg-yellow-400/10 border-yellow-400/30 text-yellow-400' 
+                          : 'bg-brand-dark/50 border-gray-800 text-gray-600 grayscale'
+                      }`}
+                    >
+                      <div className={`mb-3 p-3 rounded-full ${badge.active ? 'bg-yellow-400/20' : 'bg-gray-900'}`}>
+                        {badge.icon}
+                      </div>
+                      <h4 className={`text-xs font-black uppercase tracking-wider mb-1 ${badge.active ? 'text-white' : 'text-gray-500'}`}>{badge.title}</h4>
+                      <p className="text-[10px] text-gray-500">{badge.desc}</p>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </div>

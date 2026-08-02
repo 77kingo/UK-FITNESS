@@ -2,6 +2,7 @@ import React from 'react';
 import { Check, Dumbbell, Activity, Heart, Flame } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { useAuthStore } from '../store/authStore';
+import { TrainerCard } from '../components/trainers/TrainerCard';
 
 interface ServicesProps {
   onOpenAuth: () => void;

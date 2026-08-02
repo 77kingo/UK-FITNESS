@@ -1,14 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Dumbbell, ShieldCheck, Flame, Trophy, ChevronRight, Play } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { ClassMatchmaker } from '../components/home/ClassMatchmaker';
+import { GymVibeMeter } from '../components/home/GymVibeMeter';
+import { Testimonials } from '../components/home/Testimonials';
 
 interface HomeProps {
   onOpenAuth: () => void;
 }
 
 export const Home: React.FC<HomeProps> = ({ onOpenAuth }) => {
+  const navigate = useNavigate();
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -96,6 +101,28 @@ export const Home: React.FC<HomeProps> = ({ onOpenAuth }) => {
         </div>
       </section>
 
+      {/* Gamification Interactive Features Section */}
+      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-brand-neon/30 to-transparent" />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="lg:col-span-7">
+            <ClassMatchmaker onBookClass={() => navigate('/schedule')} />
+          </div>
+          <div className="lg:col-span-5 space-y-8">
+            <GymVibeMeter />
+            <div className="glass-card rounded-3xl p-6 border border-gray-800 text-center space-y-4">
+              <h3 className="text-white font-bold tracking-widest uppercase text-sm">Download Our App</h3>
+              <p className="text-gray-400 text-sm">Get real-time updates, track your stats, and manage bookings right from your phone.</p>
+              <div className="flex gap-2 justify-center">
+                <div className="bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 cursor-pointer hover:border-brand-neon transition-colors text-white font-bold text-xs uppercase tracking-wider">App Store</div>
+                <div className="bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 cursor-pointer hover:border-brand-neon transition-colors text-white font-bold text-xs uppercase tracking-wider">Google Play</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 2. Key Programs Section */}
       <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-900" aria-label="Key Programs">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -160,53 +187,7 @@ export const Home: React.FC<HomeProps> = ({ onOpenAuth }) => {
       </section>
 
       {/* 4. Testimonials Slider */}
-      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="User Reviews">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-brand-neon text-sm font-extrabold uppercase tracking-widest text-center block">TESTIMONIALS</span>
-          <h2 className="text-3xl font-extrabold text-white uppercase mt-2">WHAT OUR ATHLETES SAY</h2>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
-            <div>
-              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
-              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
-                "Great place for full body exercises! UK FITNESS provides top-tier training space and top-class equipment. Highly recommend this fitness hub to everyone in Mahendranagar."
-              </p>
-            </div>
-            <div className="border-t border-gray-900 pt-4">
-              <h4 className="font-bold text-white text-sm uppercase">Aade Kunwar</h4>
-              <p className="text-gray-500 text-xs">Verified Local Reviewer (4.8★)</p>
-            </div>
-          </div>
-
-          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
-            <div>
-              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
-              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
-                "Best gym and fitness center in the Bhimdatta area. Pristine machines, welcoming workout space, and highly structured coaching options."
-              </p>
-            </div>
-            <div className="border-t border-gray-900 pt-4">
-              <h4 className="font-bold text-white text-sm uppercase">Kailash Saaud</h4>
-              <p className="text-gray-500 text-xs">Fitness Athlete (5.0★)</p>
-            </div>
-          </div>
-
-          <div className="glass-card p-8 rounded-xl relative flex flex-col justify-between">
-            <div>
-              <span className="absolute top-6 right-8 text-brand-neon/15 font-serif text-8xl pointer-events-none">“</span>
-              <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
-                "Amazing atmosphere for training. High-energy coaches and clean workout facilities. Absolutely love the workout environment here!"
-              </p>
-            </div>
-            <div className="border-t border-gray-900 pt-4">
-              <h4 className="font-bold text-white text-sm uppercase">Deeps Single</h4>
-              <p className="text-gray-500 text-xs">Active Club Member (4.8★)</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Testimonials />
     </div>
   );
 };
