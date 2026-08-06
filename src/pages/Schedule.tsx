@@ -100,6 +100,11 @@ export const Schedule: React.FC<ScheduleProps> = ({ onOpenAuth }) => {
 
   const filteredSlots = getFilteredSlots();
 
+  // Detect if selected day is Saturday (day 6)
+  const selectedDate = new Date();
+  selectedDate.setDate(selectedDate.getDate() + selectedDayOffset);
+  const isSaturday = selectedDate.getDay() === 6;
+
   return (
     <div className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       {/* Page Header */}
@@ -187,6 +192,16 @@ export const Schedule: React.FC<ScheduleProps> = ({ onOpenAuth }) => {
               </div>
             </div>
           ))}
+        </div>
+      ) : isSaturday ? (
+        <div className="glass-card p-12 rounded-2xl text-center max-w-xl mx-auto space-y-4 border border-orange-500/20 bg-orange-500/5">
+          <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+            <span className="text-3xl">🔒</span>
+          </div>
+          <h3 className="text-xl font-black text-white uppercase tracking-wider">Closed on Saturday</h3>
+          <p className="text-gray-400 text-sm leading-relaxed">
+            UK FITNESS is closed every Saturday. We are open <strong className="text-white">Sunday – Friday</strong>. Rest up and come back strong!
+          </p>
         </div>
       ) : filteredSlots.length === 0 ? (
         <div className="glass-card p-12 rounded-2xl text-center max-w-xl mx-auto space-y-4 border border-gray-900">

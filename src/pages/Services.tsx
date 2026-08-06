@@ -14,7 +14,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
   const packages = [
     {
       name: 'Base Performance',
-      price: 'Rs. 2,000',
+      price: 'Rs. 1,500',
       period: 'month',
       desc: 'Access to general strength zones, state-of-the-art weights, and changing facilities.',
       features: [
