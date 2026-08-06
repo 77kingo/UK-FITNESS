@@ -178,6 +178,51 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
           ))}
         </div>
       </section>
+
+      {/* Gamified Trainers Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-gray-900">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-brand-neon text-sm font-extrabold uppercase tracking-widest">The Best in the Business</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 uppercase tracking-tight">Meet the Elite Coaches</h2>
+          <p className="text-gray-400 mt-4 leading-relaxed font-medium">Our certified trainers bring unique specialties and vibes to the floor. Check their stats and find your perfect match.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <TrainerCard
+            name="Marcus Thorne"
+            role="Head Strength Coach"
+            imageColor="from-red-900 to-black"
+            stats={{ strength: 98, agility: 65, endurance: 80, mobility: 60, motivation: 95 }}
+            playlistVibe="Heavy Metal & Phonk"
+          />
+          <TrainerCard
+            name="Elena Rostova"
+            role="HIIT & Condition Specialist"
+            imageColor="from-emerald-900 to-black"
+            stats={{ strength: 75, agility: 95, endurance: 98, mobility: 85, motivation: 90 }}
+            playlistVibe="'90s Hip Hop & D&B"
+          />
+          <TrainerCard
+            name="Julian Vance"
+            role="Mobility & Yoga Director"
+            imageColor="from-indigo-900 to-black"
+            stats={{ strength: 70, agility: 80, endurance: 85, mobility: 100, motivation: 85 }}
+            playlistVibe="Deep House & Lo-Fi"
+          />
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="border-t border-gray-900 bg-black py-20 px-4 text-center">
+        <div className="max-w-3xl mx-auto space-y-8">
+          <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight leading-none">
+            READY TO JOIN<br />
+            <span className="text-brand-neon">THE ELITE?</span>
+          </h2>
+          <Button size="lg" className="w-full sm:w-auto px-12 py-4 text-lg" onClick={onOpenAuth}>
+            <span className="tracking-widest">START YOUR JOURNEY</span>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 };
