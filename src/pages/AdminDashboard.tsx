@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useBookingStore } from '../store/bookingStore';
+import { usePaymentStore, PaymentSubmission } from '../store/paymentStore';
 import {
   Plus, Users, Calendar, Check, AlertCircle,
   BarChart2, Star, Trash2, CheckCircle2, Clock,
   Activity, Shield, UserCheck, ChevronDown,
-  Bell, Eye
+  Bell, Eye, QrCode, CreditCard, Upload, XCircle, Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ── Types ────────────────────────────────────────────────────────────────────
-type AdminTab = 'overview' | 'classes' | 'schedule' | 'roster' | 'reviews' | 'announcements';
+type AdminTab = 'overview' | 'classes' | 'schedule' | 'roster' | 'reviews' | 'announcements' | 'payments' | 'qrsettings';
 
 interface MockRosterEntry {
   id: string;
@@ -123,6 +124,20 @@ export const AdminDashboard: React.FC = () => {
   const [newAnnBody,  setNewAnnBody]  = useState('');
   const [newAnnType,  setNewAnnType]  = useState<'info' | 'warning' | 'urgent'>('info');
 
+  // ── Payments & QR Settings Store ──
+  const { submissions, qrConfig, updateQRConfig, approvePayment, rejectPayment } = usePaymentStore();
+
+  // QR Settings local form state
+  const [bankName, setBankName]           = useState(qrConfig.bankName);
+  const [accountNumber, setAccountNumber] = useState(qrConfig.accountNumber);
+  const [instructions, setInstructions]   = useState(qrConfig.instructions);
+  const [qrImage, setQrImage]             = useState(qrConfig.qrImageBase64);
+
+  // Payment History filters & modal
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [viewReceiptUrl, setViewReceiptUrl] = useState<string | null>(null);
+  const [reviewNote, setReviewNote]       = useState('');
+
   useEffect(() => { fetchClassTypes(); fetchScheduleSlots(); }, [fetchClassTypes, fetchScheduleSlots]);
   useEffect(() => { if (classTypes.length > 0 && !selectedClassTypeId) setSelectedClassTypeId(classTypes[0].id); }, [classTypes, selectedClassTypeId]);
 
@@ -134,8 +149,31 @@ export const AdminDashboard: React.FC = () => {
   const totalCapacity  = scheduleSlots.reduce((a, s) => a + (s.classType?.capacity ?? 0), 0);
   const occupancyPct   = totalCapacity > 0 ? Math.round((totalBookings / totalCapacity) * 100) : 0;
   const pendingReviews = reviews.filter(r => r.status === 'pending').length;
+  const pendingPayments = submissions.filter(s => s.status === 'pending').length;
 
   // ── Handlers ────────────────────────────────────────────────────────────
+  const handleQRImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setQrImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveQRConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateQRConfig({
+      bankName,
+      accountNumber,
+      instructions,
+      qrImageBase64: qrImage,
+    });
+    setActionSuccess('QR Payment settings saved successfully!');
+    setTimeout(() => setActionSuccess(null), 3000);
+  };
+
   const handleAddClassType = async (e: React.FormEvent) => {
     e.preventDefault(); setActionError(null); setActionSuccess(null); setSubmitting(true);
     if (!className || !classDesc) { setActionError('Fill in class name and description.'); setSubmitting(false); return; }
@@ -188,6 +226,8 @@ export const AdminDashboard: React.FC = () => {
 
   const tabs: { id: AdminTab; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'overview',       label: 'Overview',        icon: <Activity className="h-4 w-4" /> },
+    { id: 'payments',       label: 'Payments',        icon: <CreditCard className="h-4 w-4" />, badge: pendingPayments },
+    { id: 'qrsettings',     label: 'QR Settings',     icon: <QrCode className="h-4 w-4" /> },
     { id: 'classes',        label: 'Add Class',       icon: <Plus className="h-4 w-4" /> },
     { id: 'schedule',       label: 'Schedule Slot',   icon: <Calendar className="h-4 w-4" /> },
     { id: 'roster',         label: 'Class Roster',    icon: <UserCheck className="h-4 w-4" /> },
@@ -573,8 +613,273 @@ export const AdminDashboard: React.FC = () => {
             </div>
           )}
 
+          {/* ═══ PAYMENTS HISTORY & REVIEW TAB ════════════════════════════ */}
+          {activeTab === 'payments' && (
+            <div className="space-y-6">
+              {/* Header & Filter Row */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 glass-card p-5 rounded-2xl border border-gray-800">
+                <div>
+                  <h3 className="text-white font-bold text-base uppercase tracking-tight flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-brand-neon" />
+                    Member Payment History & Receipts
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1">Review uploaded member receipts, verify amounts, and update membership status.</p>
+                </div>
+                {/* Filter buttons */}
+                <div className="flex gap-2 w-full sm:w-auto">
+                  {(['all', 'pending', 'approved', 'rejected'] as const).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setPaymentFilter(f)}
+                      className={`flex-1 sm:flex-none text-xs font-bold uppercase px-3 py-1.5 rounded-lg border transition-all ${
+                        paymentFilter === f
+                          ? 'bg-brand-neon text-brand-dark border-brand-neon shadow-neon-glow'
+                          : 'bg-brand-dark text-gray-400 border-gray-800 hover:text-white'
+                      }`}
+                    >
+                      {f} {f === 'pending' && pendingPayments > 0 ? `(${pendingPayments})` : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payments Submissions List */}
+              {submissions.filter(s => paymentFilter === 'all' || s.status === paymentFilter).length === 0 ? (
+                <div className="glass-card p-12 rounded-2xl text-center border border-gray-800 space-y-3">
+                  <CreditCard className="h-10 w-10 text-gray-600 mx-auto" />
+                  <h4 className="text-white font-bold text-sm uppercase">No Payments Found</h4>
+                  <p className="text-gray-500 text-xs">There are no payment submissions matching the "{paymentFilter}" filter.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {submissions
+                    .filter(s => paymentFilter === 'all' || s.status === paymentFilter)
+                    .map(sub => (
+                      <div
+                        key={sub.id}
+                        className={`glass-card p-5 rounded-2xl border transition-all ${
+                          sub.status === 'pending'
+                            ? 'border-yellow-500/30 bg-yellow-500/5'
+                            : sub.status === 'approved'
+                            ? 'border-green-500/20'
+                            : 'border-red-500/20 opacity-75'
+                        }`}
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                          {/* Info */}
+                          <div className="flex items-start gap-4">
+                            {/* Receipt Thumbnail */}
+                            {sub.receiptImageBase64 ? (
+                              <button
+                                onClick={() => setViewReceiptUrl(sub.receiptImageBase64)}
+                                className="relative group shrink-0"
+                                title="Click to enlarge receipt"
+                              >
+                                <img
+                                  src={sub.receiptImageBase64}
+                                  alt="Receipt Screenshot"
+                                  className="w-16 h-16 object-cover rounded-xl border border-gray-700 group-hover:border-brand-neon transition-colors"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 rounded-xl flex items-center justify-center transition-opacity">
+                                  <Eye className="h-5 w-5 text-white" />
+                                </div>
+                              </button>
+                            ) : (
+                              <div className="w-16 h-16 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-600 shrink-0">
+                                <ImageIcon className="h-6 w-6" />
+                              </div>
+                            )}
+
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-3">
+                                <h4 className="text-white font-extrabold text-base">{sub.memberName}</h4>
+                                <span
+                                  className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                                    sub.status === 'pending'
+                                      ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                                      : sub.status === 'approved'
+                                      ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                                      : 'bg-red-500/10 text-red-400 border-red-500/20'
+                                  }`}
+                                >
+                                  {sub.status}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-400">{sub.memberEmail}</p>
+                              <div className="flex items-center gap-4 text-xs pt-1">
+                                <span className="text-brand-neon font-black">Plan: {sub.membershipTier}</span>
+                                <span className="text-white font-bold">Amount: Rs. {sub.amountPaid?.toLocaleString()}</span>
+                                <span className="text-gray-500">{new Date(sub.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border-t lg:border-t-0 border-gray-800 pt-4 lg:pt-0">
+                            {sub.status === 'pending' ? (
+                              <>
+                                <button
+                                  onClick={() => approvePayment(sub.id, 'Verified via QR screenshot')}
+                                  className="flex items-center justify-center gap-1.5 text-xs font-bold px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 rounded-xl transition-all"
+                                >
+                                  <CheckCircle2 className="h-4 w-4" /> Approve Payment
+                                </button>
+                                <button
+                                  onClick={() => rejectPayment(sub.id, 'Receipt unreadable or payment missing')}
+                                  className="flex items-center justify-center gap-1.5 text-xs font-bold px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl transition-all"
+                                >
+                                  <XCircle className="h-4 w-4" /> Reject Payment
+                                </button>
+                              </>
+                            ) : sub.status === 'approved' ? (
+                              <button
+                                onClick={() => rejectPayment(sub.id)}
+                                className="text-xs font-bold px-3 py-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                              >
+                                Revoke Approval
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => approvePayment(sub.id)}
+                                className="text-xs font-bold px-3 py-1.5 text-gray-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+                              >
+                                Re-approve
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ QR CODE SETTINGS TAB ══════════════════════════════════════ */}
+          {activeTab === 'qrsettings' && (
+            <div className="space-y-6">
+              <div className="glass-card p-6 rounded-2xl border border-gray-800">
+                <h3 className="text-white font-extrabold text-base uppercase tracking-tight flex items-center gap-2 mb-1">
+                  <QrCode className="h-5 w-5 text-brand-neon" />
+                  Gym QR Code Payment Settings
+                </h3>
+                <p className="text-xs text-gray-400 mb-6">
+                  Upload your gym's official payment QR code (eSewa / FonePay / Khalti / Bank QR). Members will see this code when paying for memberships.
+                </p>
+
+                <form onSubmit={handleSaveQRConfig} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Form fields */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className={labelCls}>Payment Gateway / Bank Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. eSewa / FonePay / Nabil Bank"
+                        className={inputCls}
+                        value={bankName}
+                        onChange={e => setBankName(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Account Number / Mobile Number</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 9800000000"
+                        className={inputCls}
+                        value={accountNumber}
+                        onChange={e => setAccountNumber(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Payment Instructions for Members</label>
+                      <textarea
+                        rows={4}
+                        placeholder="Scan QR code, enter exact membership amount, then upload screenshot of completed payment..."
+                        className={inputCls}
+                        value={instructions}
+                        onChange={e => setInstructions(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Upload QR Code Image</label>
+                      <div className="relative border-2 border-dashed border-gray-700 hover:border-brand-neon/50 bg-brand-dark/50 rounded-xl p-4 text-center cursor-pointer transition-colors">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleQRImageUpload}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Upload className="h-5 w-5 text-gray-400" />
+                          <span className="text-xs font-bold text-white">Click to upload new QR Image</span>
+                          <span className="text-[10px] text-gray-500">PNG, JPG or WEBP image</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button type="submit" className="w-full justify-center py-3 text-xs font-bold uppercase tracking-wider">
+                      Save QR Settings
+                    </Button>
+                  </div>
+
+                  {/* Member Live Preview Card */}
+                  <div className="bg-brand-dark border border-gray-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest block">Member Checkout Preview</span>
+
+                    {qrImage ? (
+                      <img
+                        src={qrImage}
+                        alt="QR Code Preview"
+                        className="w-56 h-56 object-contain rounded-xl border border-gray-700 bg-white p-2 shadow-xl"
+                      />
+                    ) : (
+                      <div className="w-56 h-56 rounded-xl border-2 border-dashed border-gray-700 flex flex-col items-center justify-center p-4 text-gray-600 bg-black/40">
+                        <QrCode className="h-16 w-16 mb-2 text-gray-700" />
+                        <span className="text-xs font-bold uppercase">No QR Image Uploaded</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1 text-xs w-full max-w-xs text-left border-t border-gray-800 pt-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Gateway:</span>
+                        <span className="text-white font-bold">{bankName || 'Not Set'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Account ID:</span>
+                        <span className="text-brand-neon font-mono font-bold">{accountNumber || 'Not Set'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
         </motion.div>
       </AnimatePresence>
+
+      {/* Lightbox Receipt Preview Modal */}
+      {viewReceiptUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={() => setViewReceiptUrl(null)}>
+          <div className="relative max-w-3xl max-h-[90vh] bg-gray-900 rounded-2xl p-2 border border-gray-800" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setViewReceiptUrl(null)}
+              className="absolute -top-3 -right-3 bg-brand-neon text-brand-dark p-2 rounded-full font-bold shadow-lg hover:scale-110 transition-transform"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img
+              src={viewReceiptUrl}
+              alt="Full Receipt Screenshot"
+              className="max-h-[85vh] w-auto object-contain rounded-xl mx-auto"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

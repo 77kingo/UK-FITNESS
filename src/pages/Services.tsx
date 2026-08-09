@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Dumbbell, Activity, Heart, Flame } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { useAuthStore } from '../store/authStore';
 import { TrainerCard } from '../components/trainers/TrainerCard';
+import { QRPaymentModal } from '../components/payment/QRPaymentModal';
 
 interface ServicesProps {
   onOpenAuth: () => void;
@@ -10,6 +11,14 @@ interface ServicesProps {
 
 export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
   const { user } = useAuthStore();
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<{ name: string; priceNum: number }>({ name: '', priceNum: 0 });
+
+  const handleJoinClick = (pkgName: string, priceStr: string) => {
+    const priceNum = parseInt(priceStr.replace(/[^0-9]/g, ''), 10) || 0;
+    setSelectedPackage({ name: pkgName, priceNum });
+    setPaymentModalOpen(true);
+  };
 
   const packages = [
     {
@@ -136,23 +145,13 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
 
               {/* Purchase Trigger CTA */}
               <div>
-                {user ? (
-                  <Button
-                    variant={pkg.isPopular ? 'primary' : 'outline'}
-                    className="w-full text-sm font-bold uppercase tracking-wider py-3"
-                    onClick={() => alert(`Membership registration simulated for ${pkg.name}. Complete setup in Phase 3.`)}
-                  >
-                    {pkg.cta}
-                  </Button>
-                ) : (
-                  <Button
-                    variant={pkg.isPopular ? 'primary' : 'outline'}
-                    className="w-full text-sm font-bold uppercase tracking-wider py-3"
-                    onClick={onOpenAuth}
-                  >
-                    Sign In to Purchase
-                  </Button>
-                )}
+                <Button
+                  variant={pkg.isPopular ? 'primary' : 'outline'}
+                  className="w-full text-sm font-bold uppercase tracking-wider py-3"
+                  onClick={() => handleJoinClick(pkg.name, pkg.price)}
+                >
+                  Pay via QR & Join ({pkg.name})
+                </Button>
               </div>
             </div>
           ))}
@@ -218,11 +217,22 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
             READY TO JOIN<br />
             <span className="text-brand-neon">THE ELITE?</span>
           </h2>
-          <Button size="lg" className="w-full sm:w-auto px-12 py-4 text-lg" onClick={onOpenAuth}>
+          <Button size="lg" className="w-full sm:w-auto px-12 py-4 text-lg" onClick={() => handleJoinClick('Base Performance', 'Rs. 1,500')}>
             <span className="tracking-widest">START YOUR JOURNEY</span>
           </Button>
         </div>
       </section>
+
+      {/* QR Code Payment Modal for Members */}
+      <QRPaymentModal
+        isOpen={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        membershipTier={selectedPackage.name}
+        amount={selectedPackage.priceNum}
+        initialName={user?.user_metadata?.full_name || ''}
+        initialEmail={user?.email || ''}
+      />
     </div>
   );
 };
+
