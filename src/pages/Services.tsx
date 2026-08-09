@@ -229,7 +229,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
         onClose={() => setPaymentModalOpen(false)}
         membershipTier={selectedPackage.name}
         amount={selectedPackage.priceNum}
-        initialName={user?.user_metadata?.full_name || ''}
+        initialName={user?.fullName || ''}
         initialEmail={user?.email || ''}
       />
     </div>

@@ -3,7 +3,7 @@ import { useBookingStore } from '../store/bookingStore';
 import { usePaymentStore } from '../store/paymentStore';
 import {
   Plus, Users, Calendar, Check, AlertCircle,
-  BarChart2, Star, Trash2, CheckCircle2,
+  BarChart2, Star, Trash2, CheckCircle2, Clock, ChevronDown, X,
   Activity, Shield, UserCheck,
   Bell, Eye, QrCode, CreditCard, Upload, XCircle, Image as ImageIcon
 } from 'lucide-react';
