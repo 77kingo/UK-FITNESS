@@ -6,10 +6,10 @@ import { TrainerCard } from '../components/trainers/TrainerCard';
 import { QRPaymentModal } from '../components/payment/QRPaymentModal';
 
 interface ServicesProps {
-  onOpenAuth: () => void;
+  onOpenAuth?: () => void;
 }
 
-export const Services: React.FC<ServicesProps> = ({ onOpenAuth }) => {
+export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) => {
   const { user } = useAuthStore();
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<{ name: string; priceNum: number }>({ name: '', priceNum: 0 });

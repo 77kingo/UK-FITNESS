@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useBookingStore } from '../store/bookingStore';
-import { usePaymentStore, PaymentSubmission } from '../store/paymentStore';
+import { usePaymentStore } from '../store/paymentStore';
 import {
   Plus, Users, Calendar, Check, AlertCircle,
-  BarChart2, Star, Trash2, CheckCircle2, Clock,
-  Activity, Shield, UserCheck, ChevronDown,
+  BarChart2, Star, Trash2, CheckCircle2,
+  Activity, Shield, UserCheck,
   Bell, Eye, QrCode, CreditCard, Upload, XCircle, Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
@@ -136,7 +136,6 @@ export const AdminDashboard: React.FC = () => {
   // Payment History filters & modal
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [viewReceiptUrl, setViewReceiptUrl] = useState<string | null>(null);
-  const [reviewNote, setReviewNote]       = useState('');
 
   useEffect(() => { fetchClassTypes(); fetchScheduleSlots(); }, [fetchClassTypes, fetchScheduleSlots]);
   useEffect(() => { if (classTypes.length > 0 && !selectedClassTypeId) setSelectedClassTypeId(classTypes[0].id); }, [classTypes, selectedClassTypeId]);

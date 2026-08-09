@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, QrCode, Upload, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, ShieldCheck, Download, Copy, Check } from 'lucide-react';
+import { X, QrCode, Upload, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, Copy, Check } from 'lucide-react';
 import { usePaymentStore } from '../../store/paymentStore';
 import { Button } from '../common/Button';
 
