@@ -187,6 +187,11 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
         </div>
       </section>
 
+      {/* Fitness Calculator Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-gray-900">
+        <FitnessCalculator />
+      </section>
+
       {/* Gamified Trainers Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-gray-900">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -201,6 +206,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
             imageColor="from-red-900 to-black"
             stats={{ strength: 98, agility: 65, endurance: 80, mobility: 60, motivation: 95 }}
             playlistVibe="Heavy Metal & Phonk"
+            onBookPT={() => handleBookPT('Marcus Thorne')}
           />
           <TrainerCard
             name="Elena Rostova"
@@ -208,6 +214,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
             imageColor="from-emerald-900 to-black"
             stats={{ strength: 75, agility: 95, endurance: 98, mobility: 85, motivation: 90 }}
             playlistVibe="'90s Hip Hop & D&B"
+            onBookPT={() => handleBookPT('Elena Rostova')}
           />
           <TrainerCard
             name="Julian Vance"
@@ -215,6 +222,7 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
             imageColor="from-indigo-900 to-black"
             stats={{ strength: 70, agility: 80, endurance: 85, mobility: 100, motivation: 85 }}
             playlistVibe="Deep House & Lo-Fi"
+            onBookPT={() => handleBookPT('Julian Vance')}
           />
         </div>
       </section>
@@ -240,6 +248,14 @@ export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) =
         amount={selectedPackage.priceNum}
         initialName={user?.fullName || ''}
         initialEmail={user?.email || ''}
+      />
+
+      {/* PT Booking Modal */}
+      <PTBookingModal
+        isOpen={ptModalOpen}
+        onClose={() => setPtModalOpen(false)}
+        preselectedTrainer={selectedTrainerName}
+        memberName={user?.fullName || ''}
       />
     </div>
   );

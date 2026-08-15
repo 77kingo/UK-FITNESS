@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Calculator, Flame, Droplets, Dumbbell, Sparkles, ChevronRight, RefreshCw } from 'lucide-react';
-import { Button } from '../common/Button';
+import { Calculator, Sparkles, Droplets } from 'lucide-react';
 
 export const FitnessCalculator: React.FC = () => {
   const [gender, setGender] = useState<'male' | 'female'>('male');

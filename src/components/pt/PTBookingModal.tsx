@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Dumbbell, User, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, Dumbbell, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '../common/Button';
 
 interface PTBookingModalProps {

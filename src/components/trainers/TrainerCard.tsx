@@ -14,9 +14,10 @@ interface TrainerCardProps {
     motivation: number;
   };
   playlistVibe: string;
+  onBookPT?: () => void;
 }
 
-export const TrainerCard: React.FC<TrainerCardProps> = ({ name, role, imageColor, stats, playlistVibe }) => {
+export const TrainerCard: React.FC<TrainerCardProps> = ({ name, role, imageColor, stats, playlistVibe, onBookPT }) => {
   // SVG Radar Chart Logic
   const size = 120;
   const center = size / 2;
@@ -122,7 +123,10 @@ export const TrainerCard: React.FC<TrainerCardProps> = ({ name, role, imageColor
             <Instagram className="h-4 w-4 text-gray-500 hover:text-white cursor-pointer transition-colors" />
             <Twitter className="h-4 w-4 text-gray-500 hover:text-white cursor-pointer transition-colors" />
           </div>
-          <button className="text-xs font-bold uppercase tracking-wider text-brand-neon hover:text-white transition-colors">
+          <button
+            onClick={onBookPT}
+            className="text-xs font-bold uppercase tracking-wider text-brand-neon hover:text-white transition-colors"
+          >
             Book PT Session →
           </button>
         </div>
