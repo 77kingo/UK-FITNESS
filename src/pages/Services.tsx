@@ -4,6 +4,8 @@ import { Button } from '../components/common/Button';
 import { useAuthStore } from '../store/authStore';
 import { TrainerCard } from '../components/trainers/TrainerCard';
 import { QRPaymentModal } from '../components/payment/QRPaymentModal';
+import { FitnessCalculator } from '../components/tools/FitnessCalculator';
+import { PTBookingModal } from '../components/pt/PTBookingModal';
 
 interface ServicesProps {
   onOpenAuth?: () => void;
@@ -12,12 +14,19 @@ interface ServicesProps {
 export const Services: React.FC<ServicesProps> = ({ onOpenAuth: _onOpenAuth }) => {
   const { user } = useAuthStore();
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [ptModalOpen, setPtModalOpen] = useState(false);
+  const [selectedTrainerName, setSelectedTrainerName] = useState('Marcus Thorne');
   const [selectedPackage, setSelectedPackage] = useState<{ name: string; priceNum: number }>({ name: '', priceNum: 0 });
 
   const handleJoinClick = (pkgName: string, priceStr: string) => {
     const priceNum = parseInt(priceStr.replace(/[^0-9]/g, ''), 10) || 0;
     setSelectedPackage({ name: pkgName, priceNum });
     setPaymentModalOpen(true);
+  };
+
+  const handleBookPT = (trainerName: string) => {
+    setSelectedTrainerName(trainerName);
+    setPtModalOpen(true);
   };
 
   const packages = [

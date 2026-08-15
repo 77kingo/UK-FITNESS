@@ -26,15 +26,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
     <nav className="sticky top-0 z-50 bg-brand-dark/80 backdrop-blur-md border-b border-gray-900" aria-label="Main Navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group" aria-label="UK Fitness Homepage">
-            <div className="bg-brand-neon p-2 rounded-lg text-brand-dark group-hover:scale-105 transition-transform duration-300">
-              <Dumbbell className="h-6 w-6 stroke-[2.5]" />
-            </div>
-            <span className="font-extrabold text-2xl tracking-wider text-white group-hover:text-brand-neon transition-colors duration-300">
-              UK <span className="text-brand-neon">FITNESS</span>
-            </span>
-          </Link>
+          {/* Logo & Live Status */}
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-2 group" aria-label="UK Fitness Homepage">
+              <div className="bg-brand-neon p-2 rounded-lg text-brand-dark group-hover:scale-105 transition-transform duration-300">
+                <Dumbbell className="h-6 w-6 stroke-[2.5]" />
+              </div>
+              <span className="font-extrabold text-2xl tracking-wider text-white group-hover:text-brand-neon transition-colors duration-300">
+                UK <span className="text-brand-neon">FITNESS</span>
+              </span>
+            </Link>
+
+            {/* Live Status Badge */}
+            {(() => {
+              const now = new Date();
+              const day = now.getDay();
+              const hour = now.getHours();
+              const isOpen = day !== 6 && hour >= 6 && hour < 21;
+              const text = day === 6 ? 'Closed Saturday' : isOpen ? 'Open Now • Closes 9 PM' : 'Closed • Opens 6 AM';
+              return (
+                <div className={`hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase border ${
+                  isOpen ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-400 animate-pulse' : 'bg-orange-400'}`} />
+                  <span>{text}</span>
+                </div>
+              );
+            })()}
+          </div>
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8">
