@@ -12,6 +12,7 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Services } from './pages/Services';
 import { Schedule } from './pages/Schedule';
+import { FitnessHub } from './pages/FitnessHub';
 import { MemberProfile } from './pages/MemberProfile';
 import { AdminDashboard } from './pages/AdminDashboard';
 
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
             <Route path="/" element={<Home onOpenAuth={handleOpenAuth} />} />
             <Route path="/services" element={<Services onOpenAuth={handleOpenAuth} />} />
             <Route path="/schedule" element={<Schedule onOpenAuth={handleOpenAuth} />} />
+            <Route path="/tools" element={<FitnessHub />} />
             
             {/* Guarded Member Dashboard */}
             <Route
