@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut, Dumbbell, Sparkles } from 'lucide-react';
+import { Menu, X, User, LogOut, Dumbbell } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from './Button';
 

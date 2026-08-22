@@ -212,13 +212,28 @@ export const GymRadioPlayer: React.FC = () => {
           )}
         </button>
 
-        {/* Volume / Mute Button */}
+        {/* Volume Level / Mute Button */}
         <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="p-3 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-brand-neon hover:border-brand-neon/40 transition-colors"
-          title={isMuted ? 'Unmute' : 'Mute'}
+          onClick={() => {
+            if (isMuted) {
+              setIsMuted(false);
+            } else if (volume >= 0.8) {
+              setIsMuted(true);
+            } else {
+              setVolume((prev) => Math.min(1, prev + 0.3));
+            }
+          }}
+          className="p-3 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-brand-neon hover:border-brand-neon/40 transition-colors flex items-center gap-1.5"
+          title={isMuted ? 'Muted (Click to Unmute)' : `Volume: ${Math.round(volume * 100)}%`}
         >
-          {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          {isMuted ? (
+            <VolumeX className="h-4 w-4 text-red-400" />
+          ) : (
+            <>
+              <Volume2 className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-gray-400">{Math.round(volume * 100)}%</span>
+            </>
+          )}
         </button>
 
         {/* Expand Stations List */}

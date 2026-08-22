@@ -11,7 +11,18 @@ interface Exercise {
   tip: string;
 }
 
-const WOD_ROUTINES = [
+interface Routine {
+  id: string;
+  title: string;
+  difficulty: string;
+  caloriesEst: string;
+  rounds: number;
+  workSec: number;
+  restSec: number;
+  exercises: Exercise[];
+}
+
+const WOD_ROUTINES: Routine[] = [
   {
     id: 'apex_burn',
     title: 'Apex Inferno Circuit',

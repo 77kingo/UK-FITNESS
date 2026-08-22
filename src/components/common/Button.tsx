@@ -1,8 +1,7 @@
 import React from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
-  children: React.ReactNode;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'glow' | 'cyber';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
@@ -14,6 +13,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   isLoading = false,
   className = '',
+  disabled,
   ...props
 }) => {
   const baseStyle =
@@ -47,8 +47,8 @@ export const Button: React.FC<ButtonProps> = ({
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`}
-      disabled={isLoading || props.disabled}
-      {...props}
+      disabled={isLoading || disabled}
+      {...(props as any)}
     >
       {isLoading ? (
         <div className="flex items-center gap-2">
